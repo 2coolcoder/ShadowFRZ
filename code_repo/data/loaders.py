@@ -50,3 +50,55 @@ class CifarGPU:
     def test_batches(self, batch=1000):
         for i in range(0, self.xte.shape[0], batch):
             yield self.norm(self.xte[i:i + batch]), self.yte[i:i + batch]
+
+
+class WikiTextMLM:
+    """Packed 128-token WikiText-103 sequences; BERT masking (15%: 80/10/10) on the GPU."""
+
+    def __init__(self, device, seed=0, mask_id=103, vocab=30522, special=(0, 100, 101, 102, 103)):
+        self.tr = np.load(os.path.join(CACHE, "wt103", "train_128.npy"), mmap_mode="r")
+        self.va = torch.from_numpy(np.load(os.path.join(CACHE, "wt103", "valid_128.npy")).astype(np.int64)).to(device)
+        self.device, self.mask_id, self.vocab = device, mask_id, vocab
+        self.special = torch.tensor(special, device=device)
+        self.rng = np.random.default_rng(seed)
+        self.g = torch.Generator(device=device).manual_seed(seed)
+        self.order, self.pos = self.rng.permutation(len(self.tr)), 0
+
+    def mask(self, ids, g):
+        labels = ids.clone()
+        prob = torch.rand(ids.shape, device=self.device, generator=g)
+        maskable = ~torch.isin(ids, self.special)
+        sel = (prob < 0.15) & maskable
+        labels[~sel] = -100
+        r = torch.rand(ids.shape, device=self.device, generator=g)
+        ids = ids.clone()
+        ids[sel & (r < 0.8)] = self.mask_id
+        rand_tok = torch.randint(0, self.vocab, ids.shape, device=self.device, generator=g)
+        swap = sel & (r >= 0.8) & (r < 0.9)
+        ids[swap] = rand_tok[swap]
+        return ids, labels
+
+    def batch(self, n):
+        if self.pos + n > len(self.order):
+            self.order, self.pos = self.rng.permutation(len(self.tr)), 0
+        idx = np.sort(self.order[self.pos:self.pos + n])
+        self.pos += n
+        ids = torch.from_numpy(self.tr[idx].astype(np.int64)).to(self.device, non_blocking=True)
+        return self.mask(ids, self.g)
+
+    def valid_batches(self, n=128):
+        g = torch.Generator(device=self.device).manual_seed(1234)      # fixed masks for eval
+        for i in range(0, self.va.shape[0], n):
+            yield self.mask(self.va[i:i + n], g)
+
+
+def glue_tensors(task, split, tokenizer, device, max_len=128):
+    """Tokenised GLUE split as padded GPU tensors (ids, token types, mask, labels)."""
+    from datasets import load_dataset
+    ds = load_dataset("nyu-mll/glue", task)[split]
+    if task == "sst2":
+        enc = tokenizer(ds["sentence"], truncation=True, max_length=max_len, padding="max_length")
+    else:
+        enc = tokenizer(ds["premise"], ds["hypothesis"], truncation=True, max_length=max_len, padding="max_length")
+    t = lambda k: torch.tensor(enc[k], dtype=torch.long, device=device)
+    return t("input_ids"), t("token_type_ids"), t("attention_mask"), torch.tensor(ds["label"], device=device)
