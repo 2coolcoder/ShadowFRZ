@@ -1,0 +1,9 @@
+# Versions used for every result in this repository (Python 3.12.7, CUDA 12.8)
+torch==2.9.0
+torchvision==0.24.0
+transformers==4.57.3
+datasets==3.5.0
+tokenizers==0.22.1
+numpy==1.26.4
+matplotlib==3.11.0
+pillow

@@ -1,0 +1,52 @@
+# ---------------------------------------------------------------- write-ups kept local
+ideation_docs
+analysis.md
+proposal.md
+
+# ---------------------------------------------------------------- slides: track only the compiled PDFs
+proposal_slides/*
+!proposal_slides/slides.pdf
+final_slides/*
+!final_slides/slides.pdf
+
+# ---------------------------------------------------------------- code_repo
+# Model checkpoints (Track C model.pt files) and V3 validation tensors: ~6.5 GB.
+# Everything else under results/ (config/log/trace/profile/final JSON, figures) is small and tracked.
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+# Per-job stdout/stderr written by scripts/queue.py (machine-specific paths, noisy)
+code_repo/logs/
+# Datasets and caches live outside the repo ($SYSDL_CACHE, see code_repo/env.sh);
+# guard against an accidental in-repo cache
+code_repo/data/cache/
+code_repo/**/hf_cache/
+
+# ---------------------------------------------------------------- Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+venv/
+.pytest_cache/
+
+# ---------------------------------------------------------------- LaTeX build artefacts
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# ---------------------------------------------------------------- editors / OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
