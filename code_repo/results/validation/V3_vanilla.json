@@ -1,0 +1,11 @@
+{
+ "variant": "vanilla",
+ "max_loss_diff": 0.0,
+ "max_param_diff": 0.0,
+ "loss_first_last_emul": [
+  10.375151634216309,
+  10.260645866394043
+ ],
+ "peak_MB_stage1": 376.61865234375,
+ "peak_MB_stage2": 406.5546875
+}

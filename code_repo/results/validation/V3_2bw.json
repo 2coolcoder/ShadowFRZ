@@ -1,0 +1,11 @@
+{
+ "variant": "2bw",
+ "max_loss_diff": 0.0,
+ "max_param_diff": 0.0,
+ "loss_first_last_emul": [
+  10.375151634216309,
+  10.265231609344482
+ ],
+ "peak_MB_stage1": 412.95458984375,
+ "peak_MB_stage2": 442.75634765625
+}
