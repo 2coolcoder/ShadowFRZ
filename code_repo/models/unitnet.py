@@ -127,3 +127,240 @@ class ResNetUnits(UnitNet):
         for u in self.units:
             x = u(x)
         return x
+
+
+# ============================================================================ BERT
+BERT_SIZES = {          # Turc et al. 2019 compact BERTs + the two public sizes
+    "mini":   dict(layers=4, hidden=256, heads=4),
+    "small":  dict(layers=4, hidden=512, heads=8),
+    "medium": dict(layers=8, hidden=512, heads=8),
+    "base":   dict(layers=12, hidden=768, heads=12),
+    "large":  dict(layers=24, hidden=1024, heads=16),
+}
+
+
+def bert_config(size, vocab=30522, max_pos=512):
+    from transformers import BertConfig
+    s = BERT_SIZES[size]
+    return BertConfig(vocab_size=vocab, hidden_size=s["hidden"], num_hidden_layers=s["layers"],
+                      num_attention_heads=s["heads"], intermediate_size=4 * s["hidden"],
+                      max_position_embeddings=max_pos, tie_word_embeddings=False,
+                      attn_implementation="sdpa")
+
+
+def _layer_out(o):
+    return o[0] if isinstance(o, (tuple, list)) else o
+
+
+class BertMLMUnits(UnitNet):
+    """Units: [embeddings, layer_1 .. layer_L, MLM head]. Word embeddings and the MLM
+    decoder are UNTIED (separate parameters): tying would put one parameter on the first
+    and last pipeline stage. Applied to every variant, so comparisons stay like-for-like."""
+
+    def __init__(self, size):
+        super().__init__()
+        from transformers import BertForMaskedLM
+        cfg = bert_config(size)
+        m = BertForMaskedLM(cfg)
+        self.cfg = cfg
+        self.units = nn.ModuleList([m.bert.embeddings, *m.bert.encoder.layer, m.cls])
+
+    def prepare(self, batch):
+        ids, labels = batch
+        return ids, labels
+
+    def unit_forward(self, i, x, ctx):
+        last = len(self.units) - 1
+        if i == 0:
+            return self.units[0](input_ids=x)
+        if i < last:
+            return _layer_out(self.units[i](x))
+        # MLM head only at masked positions: exact for the loss, ~7x less head compute/memory
+        sel = ctx != -100
+        logits = self.units[last](x[sel])
+        return F.cross_entropy(logits, ctx[sel])
+
+
+class BertClsUnits(UnitNet):
+    """Sequence classification from a public checkpoint. Units: [embeddings, layers, head]
+    where head = pooler + dropout + classifier. Padding mask passed through ctx."""
+
+    def __init__(self, name, num_labels):
+        super().__init__()
+        from transformers import BertForSequenceClassification
+        m = BertForSequenceClassification.from_pretrained(name, num_labels=num_labels,
+                                                          attn_implementation="sdpa")
+        self.cfg = m.config
+        head = nn.ModuleDict({"pooler": m.bert.pooler, "dropout": m.dropout, "classifier": m.classifier})
+        self.units = nn.ModuleList([m.bert.embeddings, *m.bert.encoder.layer, head])
+
+    def prepare(self, batch):
+        ids, tt, mask, labels = batch
+        ext = (1.0 - mask[:, None, None, :].float()) * torch.finfo(torch.float32).min
+        return (ids, tt), (ext, labels)
+
+    def _head_logits(self, x):
+        h = self.units[-1]
+        return h["classifier"](h["dropout"](h["pooler"](x)))
+
+    def unit_forward(self, i, x, ctx):
+        ext, labels = ctx
+        last = len(self.units) - 1
+        if i == 0:
+            return self.units[0](input_ids=x[0], token_type_ids=x[1])
+        if i < last:
+            return _layer_out(self.units[i](x, attention_mask=ext))
+        return F.cross_entropy(self._head_logits(x), labels)
+
+    def logits(self, batch):
+        x, (ext, _) = self.prepare(batch)
+        for i in range(len(self.units) - 1):
+            x = self.unit_forward(i, x, (ext, None))
+        return self._head_logits(x)
+
+
+def count_params(net):
+    return sum(p.numel() for p in net.parameters())
+
+
+# ============================================================================ Pre-LN BERT (Megatron-style)
+class _Cfg:
+    def __init__(self, **kw):
+        self.__dict__.update(kw)
+
+
+class PreLNEmbeddings(nn.Module):
+    def __init__(self, vocab, hidden, max_pos=512, types=2, p=0.1):
+        super().__init__()
+        self.word = nn.Embedding(vocab, hidden)
+        self.pos = nn.Embedding(max_pos, hidden)
+        self.tok_type = nn.Embedding(types, hidden)
+        self.drop = nn.Dropout(p)
+
+    def forward(self, ids, token_type_ids=None):
+        pos = torch.arange(ids.shape[1], device=ids.device)
+        h = self.word(ids) + self.pos(pos)[None]
+        h = h + self.tok_type(token_type_ids if token_type_ids is not None else torch.zeros_like(ids))
+        return self.drop(h)
+
+
+class PreLNLayer(nn.Module):
+    """h = h + Drop(Attn(LN(h)));  h = h + Drop(MLP(LN(h)))   (Megatron-LM BERT layer)"""
+
+    def __init__(self, hidden, heads, p=0.1):
+        super().__init__()
+        self.heads, self.p = heads, p
+        self.ln1 = nn.LayerNorm(hidden, eps=1e-12)
+        self.qkv = nn.Linear(hidden, 3 * hidden)
+        self.proj = nn.Linear(hidden, hidden)
+        self.ln2 = nn.LayerNorm(hidden, eps=1e-12)
+        self.fc1 = nn.Linear(hidden, 4 * hidden)
+        self.fc2 = nn.Linear(4 * hidden, hidden)
+        self.drop = nn.Dropout(p)
+
+    def forward(self, h, attn_mask=None):
+        B, T, H = h.shape
+        q, k, v = self.qkv(self.ln1(h)).view(B, T, 3, self.heads, H // self.heads).permute(2, 0, 3, 1, 4)
+        a = F.scaled_dot_product_attention(q, k, v, attn_mask=attn_mask, dropout_p=self.p if self.training else 0.0)
+        h = h + self.drop(self.proj(a.transpose(1, 2).reshape(B, T, H)))
+        return h + self.drop(self.fc2(F.gelu(self.fc1(self.ln2(h)))))
+
+
+class PreLNMLMHead(nn.Module):
+    def __init__(self, hidden, vocab):
+        super().__init__()
+        self.final_ln = nn.LayerNorm(hidden, eps=1e-12)       # Megatron's final layernorm
+        self.dense = nn.Linear(hidden, hidden)
+        self.ln = nn.LayerNorm(hidden, eps=1e-12)
+        self.decoder = nn.Linear(hidden, vocab)
+
+    def forward(self, h):
+        return self.decoder(self.ln(F.gelu(self.dense(self.final_ln(h)))))
+
+
+def _bert_init(module, layers):
+    for m in module.modules():
+        if isinstance(m, (nn.Linear, nn.Embedding)):
+            nn.init.normal_(m.weight, 0.0, 0.02)
+            if isinstance(m, nn.Linear) and m.bias is not None:
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, nn.LayerNorm):
+            nn.init.ones_(m.weight); nn.init.zeros_(m.bias)
+    for m in module.modules():                                 # Megatron scaled init of output projections
+        if isinstance(m, PreLNLayer):
+            for lin in (m.proj, m.fc2):
+                nn.init.normal_(lin.weight, 0.0, 0.02 / math.sqrt(2 * layers))
+
+
+class BertPreLNMLMUnits(UnitNet):
+    """Units: [embeddings, layer_1 .. layer_L, head(final LN + MLM transform + untied decoder)]."""
+
+    def __init__(self, size, vocab=30522):
+        super().__init__()
+        s = BERT_SIZES[size]
+        self.cfg = _Cfg(hidden_size=s["hidden"], num_hidden_layers=s["layers"], num_attention_heads=s["heads"], vocab_size=vocab)
+        self.units = nn.ModuleList([PreLNEmbeddings(vocab, s["hidden"]),
+                                    *[PreLNLayer(s["hidden"], s["heads"]) for _ in range(s["layers"])],
+                                    PreLNMLMHead(s["hidden"], vocab)])
+        _bert_init(self, s["layers"])
+
+    def prepare(self, batch):
+        return batch[0], batch[1]
+
+    def unit_forward(self, i, x, ctx):
+        last = len(self.units) - 1
+        if i == 0:
+            return self.units[0](x)
+        if i < last:
+            return self.units[i](x)
+        sel = ctx != -100
+        return F.cross_entropy(self.units[last](x[sel]), ctx[sel])
+
+
+class PreLNClsHead(nn.Module):
+    def __init__(self, hidden, num_labels, p=0.1):
+        super().__init__()
+        self.final_ln = nn.LayerNorm(hidden, eps=1e-12)
+        self.pooler = nn.Linear(hidden, hidden)
+        self.drop = nn.Dropout(p)
+        self.classifier = nn.Linear(hidden, num_labels)
+
+    def forward(self, h):
+        return self.classifier(self.drop(torch.tanh(self.pooler(self.final_ln(h)[:, 0]))))
+
+
+class BertPreLNClsUnits(UnitNet):
+    """Sequence classifier built from a Pre-LN MLM checkpoint (encoder + final LN reused)."""
+
+    def __init__(self, size, num_labels, mlm_state=None):
+        super().__init__()
+        mlm = BertPreLNMLMUnits(size)
+        if mlm_state is not None:
+            mlm.load_state_dict(mlm_state)
+        s = BERT_SIZES[size]
+        head = PreLNClsHead(s["hidden"], num_labels)
+        nn.init.normal_(head.pooler.weight, 0, 0.02); nn.init.zeros_(head.pooler.bias)
+        nn.init.normal_(head.classifier.weight, 0, 0.02); nn.init.zeros_(head.classifier.bias)
+        head.final_ln.load_state_dict(mlm.units[-1].final_ln.state_dict())
+        self.cfg = mlm.cfg
+        self.units = nn.ModuleList([*mlm.units[:-1], head])
+
+    def prepare(self, batch):
+        ids, tt, mask, labels = batch
+        ext = (1.0 - mask[:, None, None, :].float()) * torch.finfo(torch.float32).min
+        return (ids, tt), (ext, labels)
+
+    def unit_forward(self, i, x, ctx):
+        ext, labels = ctx
+        last = len(self.units) - 1
+        if i == 0:
+            return self.units[0](x[0], x[1])
+        if i < last:
+            return self.units[i](x, ext)
+        return F.cross_entropy(self.units[last](x), labels)
+
+    def logits(self, batch):
+        x, (ext, _) = self.prepare(batch)
+        for i in range(len(self.units) - 1):
+            x = self.unit_forward(i, x, (ext, None))
+        return self.units[-1](x)
