@@ -1,0 +1,9 @@
+# Track B base rows (no thresholds needed). ResNet-50, CIFAR-10, 160 ep, b=32 x m=4
+B_c10_vanilla_s0 | python train_cnn.py --variant vanilla --seed 0 --out results/trackB/B_c10_vanilla_s0
+B_c10_2bw_s0 | python train_cnn.py --variant 2bw --seed 0 --out results/trackB/B_c10_2bw_s0
+B_c10_1bw_s0 | python train_cnn.py --variant 1bw --seed 0 --out results/trackB/B_c10_1bw_s0
+B_c10_vanilla_s1 | python train_cnn.py --variant vanilla --seed 1 --out results/trackB/B_c10_vanilla_s1
+B_c10_2bw_s1 | python train_cnn.py --variant 2bw --seed 1 --out results/trackB/B_c10_2bw_s1
+B_c10_1bw_s1 | python train_cnn.py --variant 1bw --seed 1 --out results/trackB/B_c10_1bw_s1
+B_c10_plain_m1_s0 | python train_cnn.py --variant vanilla --m 1 --seed 0 --out results/trackB/B_c10_plain_m1_s0
+B_c10_1bw_d2_s0 | python train_cnn.py --variant 1bw --d 2 --seed 0 --out results/trackB/B_c10_1bw_d2_s0

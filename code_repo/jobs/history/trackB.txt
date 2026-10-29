@@ -1,0 +1,13 @@
+B_c10_full_s0 | python train_cnn.py --variant full --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_full_s0
+B_c10_frz_s0 | python train_cnn.py --variant frz --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_frz_s0
+B_c10_2bw_frz_s0 | python train_cnn.py --variant 2bw_frz --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_2bw_frz_s0
+B_c10_sel_s0 | python train_cnn.py --variant sel --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_sel_s0
+B_c10_full_freezeout_s0 | python train_cnn.py --variant full_freezeout --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_full_freezeout_s0
+B_c10_full_adamreset_s0 | python train_cnn.py --variant full_adamreset --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_full_adamreset_s0
+B_c10_full_s1 | python train_cnn.py --variant full --seed 1 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_full_s1
+B_c10_frz_s1 | python train_cnn.py --variant frz --seed 1 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_frz_s1
+B_c10_full_aggressive_s0 | python train_cnn.py --variant full --seed 0 --frz_gv 0.073 --frz_am 1e9 --sel_gv 0.0785 --out results/trackB/B_c10_full_aggressive_s0
+B_c100_vanilla_s0 | python train_cnn.py --data cifar100 --variant vanilla --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c100_vanilla_s0
+B_c100_2bw_s0 | python train_cnn.py --data cifar100 --variant 2bw --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c100_2bw_s0
+B_c100_frz_s0 | python train_cnn.py --data cifar100 --variant frz --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c100_frz_s0
+B_c100_full_s0 | python train_cnn.py --data cifar100 --variant full --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c100_full_s0
