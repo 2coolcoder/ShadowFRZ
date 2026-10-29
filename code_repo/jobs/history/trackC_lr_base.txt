@@ -1,0 +1,5 @@
+C_lrsweep_base_lr0.0001 | python train_bert.py --size base --variant vanilla --steps 4000 --lr 0.0001 --out results/trackC_lr/C_lrsweep_base_lr0.0001
+C_lrsweep_base_lr0.0002 | python train_bert.py --size base --variant vanilla --steps 4000 --lr 0.0002 --out results/trackC_lr/C_lrsweep_base_lr0.0002
+C_lrsweep_base_lr0.0005 | python train_bert.py --size base --variant vanilla --steps 4000 --lr 0.0005 --out results/trackC_lr/C_lrsweep_base_lr0.0005
+C_lrsweep2bw_base_lr0.0001 | python train_bert.py --size base --variant 2bw --steps 4000 --lr 0.0001 --out results/trackC_lr/C_lrsweep2bw_base_lr0.0001
+C_lrsweep2bw_base_lr0.0002 | python train_bert.py --size base --variant 2bw --steps 4000 --lr 0.0002 --out results/trackC_lr/C_lrsweep2bw_base_lr0.0002

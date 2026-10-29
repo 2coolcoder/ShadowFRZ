@@ -1,0 +1,10 @@
+Cp_sweep_medium_vanilla_lr0.0002 | python train_bert.py --arch preln --size medium --variant vanilla --steps 20000 --stop_at 5000 --lr 0.0002 --out results/trackC_sweep/Cp_sweep_medium_vanilla_lr0.0002
+Cp_sweep_medium_2bw_lr0.0002 | python train_bert.py --arch preln --size medium --variant 2bw --steps 20000 --stop_at 5000 --lr 0.0002 --out results/trackC_sweep/Cp_sweep_medium_2bw_lr0.0002
+Cp_sweep_medium_vanilla_lr0.0005 | python train_bert.py --arch preln --size medium --variant vanilla --steps 20000 --stop_at 5000 --lr 0.0005 --out results/trackC_sweep/Cp_sweep_medium_vanilla_lr0.0005
+Cp_sweep_medium_2bw_lr0.0005 | python train_bert.py --arch preln --size medium --variant 2bw --steps 20000 --stop_at 5000 --lr 0.0005 --out results/trackC_sweep/Cp_sweep_medium_2bw_lr0.0005
+Cp_sweep_medium_vanilla_lr0.001 | python train_bert.py --arch preln --size medium --variant vanilla --steps 20000 --stop_at 5000 --lr 0.001 --out results/trackC_sweep/Cp_sweep_medium_vanilla_lr0.001
+Cp_sweep_medium_2bw_lr0.001 | python train_bert.py --arch preln --size medium --variant 2bw --steps 20000 --stop_at 5000 --lr 0.001 --out results/trackC_sweep/Cp_sweep_medium_2bw_lr0.001
+Cp_sweep_base_vanilla_lr0.0001 | python train_bert.py --arch preln --size base --variant vanilla --steps 20000 --stop_at 5000 --lr 0.0001 --out results/trackC_sweep/Cp_sweep_base_vanilla_lr0.0001
+Cp_sweep_base_2bw_lr0.0001 | python train_bert.py --arch preln --size base --variant 2bw --steps 20000 --stop_at 5000 --lr 0.0001 --out results/trackC_sweep/Cp_sweep_base_2bw_lr0.0001
+Cp_sweep_base_vanilla_lr0.0002 | python train_bert.py --arch preln --size base --variant vanilla --steps 20000 --stop_at 5000 --lr 0.0002 --out results/trackC_sweep/Cp_sweep_base_vanilla_lr0.0002
+Cp_sweep_base_2bw_lr0.0002 | python train_bert.py --arch preln --size base --variant 2bw --steps 20000 --stop_at 5000 --lr 0.0002 --out results/trackC_sweep/Cp_sweep_base_2bw_lr0.0002

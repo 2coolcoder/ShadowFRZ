@@ -1,0 +1,1 @@
+C_lrsweep_mini_lr0.004 | python train_bert.py --size mini --variant vanilla --steps 4000 --lr 0.004 --out results/trackC_lr/C_lrsweep_mini_lr0.004

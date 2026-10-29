@@ -1,0 +1,19 @@
+{
+ "size": "small",
+ "variant": "2bw",
+ "d": 4,
+ "m": 4,
+ "batch": 128,
+ "steps": 4000,
+ "lr": 0.001,
+ "warmup": 0.06,
+ "window": 100,
+ "frz_gv": 0.2,
+ "frz_am": 0.5,
+ "sel_gv": 0.4,
+ "thaw_every": 4,
+ "replay": null,
+ "seed": 0,
+ "save": false,
+ "out": "results/trackC_lr/C_lrsweep2bw_small_lr0.001"
+}

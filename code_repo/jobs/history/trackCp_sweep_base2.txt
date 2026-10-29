@@ -1,0 +1,1 @@
+Cp_sweep_base_2bw_lr0.0001 | python train_bert.py --arch preln --size base --variant 2bw --steps 20000 --stop_at 5000 --lr 0.0001 --out results/trackC_sweep/Cp_sweep_base_2bw_lr0.0001

@@ -1,0 +1,8 @@
+# 2BW stability proxies (4000 steps): largest LR where 2BW escapes the MLM plateau
+C_lrsweep2bw_mini_lr0.001 | python train_bert.py --size mini --variant 2bw --steps 4000 --lr 0.001 --out results/trackC_lr/C_lrsweep2bw_mini_lr0.001
+C_lrsweep2bw_small_lr0.0005 | python train_bert.py --size small --variant 2bw --steps 4000 --lr 0.0005 --out results/trackC_lr/C_lrsweep2bw_small_lr0.0005
+C_lrsweep2bw_small_lr0.001 | python train_bert.py --size small --variant 2bw --steps 4000 --lr 0.001 --out results/trackC_lr/C_lrsweep2bw_small_lr0.001
+C_lrsweep2bw_medium_lr0.0002 | python train_bert.py --size medium --variant 2bw --steps 4000 --lr 0.0002 --out results/trackC_lr/C_lrsweep2bw_medium_lr0.0002
+C_lrsweep2bw_medium_lr0.0005 | python train_bert.py --size medium --variant 2bw --steps 4000 --lr 0.0005 --out results/trackC_lr/C_lrsweep2bw_medium_lr0.0005
+C_lrsweep2bw_base_lr0.0001 | python train_bert.py --size base --variant 2bw --steps 4000 --lr 0.0001 --out results/trackC_lr/C_lrsweep2bw_base_lr0.0001
+C_lrsweep2bw_base_lr0.0002 | python train_bert.py --size base --variant 2bw --steps 4000 --lr 0.0002 --out results/trackC_lr/C_lrsweep2bw_base_lr0.0002
