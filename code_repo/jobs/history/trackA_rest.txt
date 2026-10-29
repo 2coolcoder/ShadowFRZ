@@ -1,0 +1,2 @@
+A_resnet56_cifar10_K1_paper_s0 | python train_ddg.py --model resnet56 --data cifar10 --K 1 --recipe paper --seed 0 --out results/trackA/A_resnet56_cifar10_K1_paper_s0
+A_resnet56_cifar10_K2_paper_s0 | python train_ddg.py --model resnet56 --data cifar10 --K 2 --recipe paper --seed 0 --out results/trackA/A_resnet56_cifar10_K2_paper_s0

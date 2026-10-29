@@ -1,0 +1,21 @@
+{
+ "model": "resnet110",
+ "data": "cifar100",
+ "K": 1,
+ "recipe": "modern",
+ "epochs": null,
+ "batch": 128,
+ "seed": 0,
+ "out": "results/trackA/A_resnet110_cifar100_K1_modern_s0",
+ "recipe_cfg": {
+  "lr": 0.1,
+  "epochs": 200,
+  "wd": 0.0005,
+  "sched": "cosine"
+ },
+ "bounds": [
+  0,
+  56
+ ],
+ "n_units": 56
+}

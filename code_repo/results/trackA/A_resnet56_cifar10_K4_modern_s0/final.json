@@ -1,0 +1,11 @@
+{
+ "final_acc": 0.9409,
+ "best_acc": 0.941,
+ "epochs": 200,
+ "time_s": 6001.893192529678,
+ "K": 4,
+ "model": "resnet56",
+ "data": "cifar10",
+ "recipe": "modern",
+ "seed": 0
+}

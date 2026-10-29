@@ -1,0 +1,3 @@
+A_resnet56_cifar100_K1_modern_s1 | python train_ddg.py --model resnet56 --data cifar100 --K 1 --recipe modern --seed 1 --out results/trackA/A_resnet56_cifar100_K1_modern_s1
+A_resnet56_cifar100_K2_modern_s1 | python train_ddg.py --model resnet56 --data cifar100 --K 2 --recipe modern --seed 1 --out results/trackA/A_resnet56_cifar100_K2_modern_s1
+A_resnet56_cifar100_K4_modern_s1 | python train_ddg.py --model resnet56 --data cifar100 --K 4 --recipe modern --seed 1 --out results/trackA/A_resnet56_cifar100_K4_modern_s1
