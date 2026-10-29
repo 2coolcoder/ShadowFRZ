@@ -1,0 +1,5 @@
+C_medium_full_s1 | python train_bert.py --arch preln --size medium --lr 0.0005 --steps 20000 --variant full --seed 1 --frz_gv 0.3 --frz_am 0.6 --sel_gv 0.4 --sel_am 0.8 --save --out results/trackC/C_medium_full_s1
+C_medium_1bw_d2_m2_s0 | python train_bert.py --arch preln --size medium --lr 0.0005 --steps 20000 --variant 1bw --d 2 --m 2 --seed 0 --frz_gv 0.3 --frz_am 0.6 --sel_gv 0.4 --sel_am 0.8 --save --out results/trackC/C_medium_1bw_d2_m2_s0
+C_medium_1bw_d4_m16_s0 | python train_bert.py --arch preln --size medium --lr 0.0005 --steps 20000 --variant 1bw --d 4 --m 16 --seed 0 --frz_gv 0.3 --frz_am 0.6 --sel_gv 0.4 --sel_am 0.8 --save --out results/trackC/C_medium_1bw_d4_m16_s0
+C_medium_1bw_d8_m8_s0 | python train_bert.py --arch preln --size medium --lr 0.0005 --steps 20000 --variant 1bw --d 8 --m 8 --seed 0 --frz_gv 0.3 --frz_am 0.6 --sel_gv 0.4 --sel_am 0.8 --save --out results/trackC/C_medium_1bw_d8_m8_s0
+C_medium_2bw_d8_m8_s0 | python train_bert.py --arch preln --size medium --lr 0.0005 --steps 20000 --variant 2bw --d 8 --m 8 --seed 0 --frz_gv 0.3 --frz_am 0.6 --sel_gv 0.4 --sel_am 0.8 --save --out results/trackC/C_medium_2bw_d8_m8_s0

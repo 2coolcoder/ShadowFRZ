@@ -1,0 +1,22 @@
+{
+ "size": "medium",
+ "arch": "preln",
+ "stop_at": null,
+ "variant": "1bw",
+ "d": 2,
+ "m": 2,
+ "batch": 128,
+ "steps": 20000,
+ "lr": 0.0005,
+ "warmup": 0.06,
+ "window": 100,
+ "frz_gv": 0.3,
+ "frz_am": 0.6,
+ "sel_gv": 0.4,
+ "sel_am": 0.8,
+ "thaw_every": 4,
+ "replay": null,
+ "seed": 0,
+ "save": true,
+ "out": "results/trackC/C_medium_1bw_d2_m2_s0"
+}

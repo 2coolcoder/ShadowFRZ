@@ -1,0 +1,4 @@
+# Track C (Pre-LN) threshold-free rows, Medium lr 5e-4
+C_medium_vanilla_s0 | python train_bert.py --arch preln --size medium --lr 0.0005 --steps 20000 --variant vanilla --seed 0 --save --out results/trackC/C_medium_vanilla_s0
+C_medium_2bw_s0 | python train_bert.py --arch preln --size medium --lr 0.0005 --steps 20000 --variant 2bw --seed 0 --save --out results/trackC/C_medium_2bw_s0
+C_medium_1bw_s0 | python train_bert.py --arch preln --size medium --lr 0.0005 --steps 20000 --variant 1bw --seed 0 --save --out results/trackC/C_medium_1bw_s0

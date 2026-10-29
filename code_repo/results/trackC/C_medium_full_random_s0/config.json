@@ -1,0 +1,22 @@
+{
+ "size": "medium",
+ "arch": "preln",
+ "stop_at": null,
+ "variant": "full_random",
+ "d": 4,
+ "m": 4,
+ "batch": 128,
+ "steps": 20000,
+ "lr": 0.0005,
+ "warmup": 0.06,
+ "window": 100,
+ "frz_gv": 0.3,
+ "frz_am": 0.6,
+ "sel_gv": 0.4,
+ "sel_am": 0.8,
+ "thaw_every": 4,
+ "replay": "results/trackC/C_medium_full_s0/trace.jsonl",
+ "seed": 0,
+ "save": false,
+ "out": "results/trackC/C_medium_full_random_s0"
+}

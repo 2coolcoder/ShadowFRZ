@@ -1,0 +1,49 @@
+{
+ "variant": "vanilla",
+ "d": 4,
+ "m": 4,
+ "stages": [
+  1,
+  1,
+  1,
+  2,
+  2,
+  2,
+  3,
+  3,
+  3,
+  4
+ ],
+ "wall_s": 8364.080759763718,
+ "steps": 20000,
+ "final": {
+  "valid_loss": 2.7702859970557028,
+  "valid_mlm_acc": 0.5132515268672606
+ },
+ "mismatch": {
+  "mismatched_microbatch_units": 0,
+  "microbatch_units": 0
+ },
+ "mem_peak_maxstage_MB": 1404.42578125,
+ "mem_avg_maxstage_MB": 1404.42578125,
+ "mem_avg_stage1_MB": 1404.42578125,
+ "mem_start_by_stage_MB": {
+  "1": 1404.42578125,
+  "2": 1333.9921875,
+  "3": 937.4296875,
+  "4": 321.7235450744629
+ },
+ "mem_start_breakdown_stage1_MB": {
+  "weights": 84.66796875,
+  "grads": 84.66796875,
+  "opt": 169.3359375,
+  "acts": 1065.75390625,
+  "total": 1404.42578125
+ },
+ "time_static_avg": 95.22935697436333,
+ "time_rebal_avg": 95.22935697436333,
+ "time_static_first": 95.22935697436333,
+ "frozen_frac_avg": 0.0,
+ "noshadow_frac_avg": 0.0,
+ "n_windows": 200
+}
