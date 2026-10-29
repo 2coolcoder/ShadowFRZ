@@ -1,0 +1,4 @@
+# Track C threshold-free rows, BERT-Mini (lr 2e-3 from sweep)
+C_mini_vanilla_s0 | python train_bert.py --size mini --lr 0.002 --steps 20000 --variant vanilla --seed 0 --save --out results/trackC/C_mini_vanilla_s0
+C_mini_2bw_s0 | python train_bert.py --size mini --lr 0.002 --steps 20000 --variant 2bw --seed 0 --save --out results/trackC/C_mini_2bw_s0
+C_mini_1bw_s0 | python train_bert.py --size mini --lr 0.002 --steps 20000 --variant 1bw --seed 0 --save --out results/trackC/C_mini_1bw_s0

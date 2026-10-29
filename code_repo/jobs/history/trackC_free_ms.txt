@@ -1,0 +1,7 @@
+# Track C (Pre-LN) threshold-free rows, Mini lr 1e-3, Small lr 5e-4
+C_mini_vanilla_s0 | python train_bert.py --arch preln --size mini --lr 0.001 --steps 20000 --variant vanilla --seed 0 --save --out results/trackC/C_mini_vanilla_s0
+C_mini_2bw_s0 | python train_bert.py --arch preln --size mini --lr 0.001 --steps 20000 --variant 2bw --seed 0 --save --out results/trackC/C_mini_2bw_s0
+C_mini_1bw_s0 | python train_bert.py --arch preln --size mini --lr 0.001 --steps 20000 --variant 1bw --seed 0 --save --out results/trackC/C_mini_1bw_s0
+C_small_vanilla_s0 | python train_bert.py --arch preln --size small --lr 0.0005 --steps 20000 --variant vanilla --seed 0 --save --out results/trackC/C_small_vanilla_s0
+C_small_2bw_s0 | python train_bert.py --arch preln --size small --lr 0.0005 --steps 20000 --variant 2bw --seed 0 --save --out results/trackC/C_small_2bw_s0
+C_small_1bw_s0 | python train_bert.py --arch preln --size small --lr 0.0005 --steps 20000 --variant 1bw --seed 0 --save --out results/trackC/C_small_1bw_s0

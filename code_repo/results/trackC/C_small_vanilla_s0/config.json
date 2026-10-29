@@ -1,0 +1,22 @@
+{
+ "size": "small",
+ "arch": "preln",
+ "stop_at": null,
+ "variant": "vanilla",
+ "d": 4,
+ "m": 4,
+ "batch": 128,
+ "steps": 20000,
+ "lr": 0.0005,
+ "warmup": 0.06,
+ "window": 100,
+ "frz_gv": 0.2,
+ "frz_am": 0.5,
+ "sel_gv": 0.4,
+ "sel_am": null,
+ "thaw_every": 4,
+ "replay": null,
+ "seed": 0,
+ "save": true,
+ "out": "results/trackC/C_small_vanilla_s0"
+}
