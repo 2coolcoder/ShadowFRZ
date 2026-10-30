@@ -1,0 +1,1 @@
+B_c10_full_random_s0 | python train_cnn.py --variant full_random --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --replay results/trackB/B_c10_full_s0/trace.jsonl --out results/trackB/B_c10_full_random_s0

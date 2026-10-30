@@ -1,0 +1,3 @@
+B_c10_1bw_d2_s0 | python train_cnn.py --variant 1bw --d 2 --seed 0 --out results/trackB/B_c10_1bw_d2_s0
+B_c10_1bw_s1 | python train_cnn.py --variant 1bw --seed 1 --out results/trackB/B_c10_1bw_s1
+B_c10_2bw_frz_s0 | python train_cnn.py --variant 2bw_frz --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_2bw_frz_s0

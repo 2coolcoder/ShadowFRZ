@@ -1,0 +1,7 @@
+# proper 1BW (no shadow from step 0) after the warm-start bug fix
+C_mini_1bw_s0 | python train_bert.py --arch preln --size mini --lr 0.001 --steps 20000 --variant 1bw --seed 0 --save --out results/trackC/C_mini_1bw_s0
+C_small_1bw_s0 | python train_bert.py --arch preln --size small --lr 0.0005 --steps 20000 --variant 1bw --seed 0 --save --out results/trackC/C_small_1bw_s0
+B_c10_1bw_s0 | python train_cnn.py --variant 1bw --seed 0 --out results/trackB/B_c10_1bw_s0
+B_c10_1bw_s1 | python train_cnn.py --variant 1bw --seed 1 --out results/trackB/B_c10_1bw_s1
+B_c10_1bw_d2_s0 | python train_cnn.py --variant 1bw --d 2 --seed 0 --out results/trackB/B_c10_1bw_d2_s0
+B_c10_2bw_frz_s0 | python train_cnn.py --variant 2bw_frz --seed 0 --frz_gv 0.3 --frz_am 0.5 --sel_gv 0.4 --sel_am 0.8 --out results/trackB/B_c10_2bw_frz_s0

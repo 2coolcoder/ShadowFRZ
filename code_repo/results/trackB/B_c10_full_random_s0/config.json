@@ -1,0 +1,20 @@
+{
+ "model": "resnet50",
+ "data": "cifar10",
+ "variant": "full_random",
+ "d": 4,
+ "m": 4,
+ "batch": 128,
+ "epochs": 160,
+ "lr": 0.1,
+ "wd": 0.0005,
+ "window": 100,
+ "frz_gv": 0.3,
+ "frz_am": 0.5,
+ "sel_gv": 0.4,
+ "sel_am": 0.8,
+ "thaw_every": 4,
+ "replay": "results/trackB/B_c10_full_s0/trace.jsonl",
+ "seed": 0,
+ "out": "results/trackB/B_c10_full_random_s0"
+}

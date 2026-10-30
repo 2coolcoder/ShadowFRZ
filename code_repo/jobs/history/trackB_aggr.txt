@@ -1,0 +1,1 @@
+B_c10_full_aggressive_s0 | python train_cnn.py --variant full --seed 0 --frz_gv 0.073 --frz_am 1e9 --sel_gv 0.0785 --out results/trackB/B_c10_full_aggressive_s0

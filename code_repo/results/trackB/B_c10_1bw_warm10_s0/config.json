@@ -1,0 +1,19 @@
+{
+ "model": "resnet50",
+ "data": "cifar10",
+ "variant": "1bw",
+ "d": 4,
+ "m": 4,
+ "batch": 128,
+ "epochs": 160,
+ "lr": 0.1,
+ "wd": 0.0005,
+ "window": 100,
+ "frz_gv": 0.2,
+ "frz_am": 0.5,
+ "sel_gv": 0.4,
+ "thaw_every": 4,
+ "replay": null,
+ "seed": 0,
+ "out": "results/trackB/B_c10_1bw_s0"
+}
