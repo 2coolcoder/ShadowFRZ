@@ -1,0 +1,3 @@
+FT_sst2_C_medium_1bw_d4_m16_s0 | python finetune_glue.py --task sst2 --from_mlm results/trackC/C_medium_1bw_d4_m16_s0 --epochs 3 --out results/trackC_ft/FT_sst2_C_medium_1bw_d4_m16_s0
+FT_sst2_C_medium_1bw_d8_m8_s0 | python finetune_glue.py --task sst2 --from_mlm results/trackC/C_medium_1bw_d8_m8_s0 --epochs 3 --out results/trackC_ft/FT_sst2_C_medium_1bw_d8_m8_s0
+FT_sst2_C_medium_2bw_d8_m8_s0 | python finetune_glue.py --task sst2 --from_mlm results/trackC/C_medium_2bw_d8_m8_s0 --epochs 3 --out results/trackC_ft/FT_sst2_C_medium_2bw_d8_m8_s0

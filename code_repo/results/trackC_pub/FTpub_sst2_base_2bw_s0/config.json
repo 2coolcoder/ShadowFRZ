@@ -1,0 +1,19 @@
+{
+ "task": "sst2",
+ "from_mlm": null,
+ "public": "bert-base-uncased",
+ "variant": "2bw",
+ "d": 4,
+ "m": 4,
+ "batch": 32,
+ "epochs": 1.0,
+ "lr": null,
+ "window": 50,
+ "frz_gv": 0.3,
+ "frz_am": 0.6,
+ "sel_gv": 0.4,
+ "sel_am": 0.8,
+ "thaw_every": 4,
+ "seed": 0,
+ "out": "results/trackC_pub/FTpub_sst2_base_2bw_s0"
+}

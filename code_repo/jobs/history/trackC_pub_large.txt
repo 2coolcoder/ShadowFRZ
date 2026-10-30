@@ -1,0 +1,3 @@
+FTpub_sst2_large_vanilla_s0 | python finetune_glue.py --task sst2 --public bert-large-uncased --variant vanilla --epochs 1 --frz_gv 0.3 --frz_am 0.6 --sel_gv 0.4 --sel_am 0.8 --window 50 --out results/trackC_pub/FTpub_sst2_large_vanilla_s0
+FTpub_sst2_large_2bw_s0 | python finetune_glue.py --task sst2 --public bert-large-uncased --variant 2bw --epochs 1 --frz_gv 0.3 --frz_am 0.6 --sel_gv 0.4 --sel_am 0.8 --window 50 --out results/trackC_pub/FTpub_sst2_large_2bw_s0
+FTpub_sst2_large_full_s0 | python finetune_glue.py --task sst2 --public bert-large-uncased --variant full --epochs 1 --frz_gv 0.3 --frz_am 0.6 --sel_gv 0.4 --sel_am 0.8 --window 50 --out results/trackC_pub/FTpub_sst2_large_full_s0

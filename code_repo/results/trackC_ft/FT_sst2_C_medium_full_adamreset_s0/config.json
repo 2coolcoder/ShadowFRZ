@@ -1,0 +1,19 @@
+{
+ "task": "sst2",
+ "from_mlm": "results/trackC/C_medium_full_adamreset_s0",
+ "public": null,
+ "variant": "vanilla",
+ "d": 4,
+ "m": 4,
+ "batch": 32,
+ "epochs": 3.0,
+ "lr": null,
+ "window": 50,
+ "frz_gv": 0.2,
+ "frz_am": 0.5,
+ "sel_gv": 0.4,
+ "sel_am": null,
+ "thaw_every": 4,
+ "seed": 0,
+ "out": "results/trackC_ft/FT_sst2_C_medium_full_adamreset_s0"
+}
