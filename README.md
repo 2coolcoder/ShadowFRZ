@@ -12,8 +12,9 @@ Everything runs on 2 GPUs. A $d$-stage pipeline is *emulated* exactly on one GPU
 ## Repository layout
 
 ```
-final_project/
+ShadowFRZ/
 ├── README.md
+├── report/report.pdf              2-page project report (source: report/report.tex)
 ├── final_slides/slides.pdf        final presentation (findings)
 ├── proposal_slides/slides.pdf     proposal presentation
 └── code_repo/
@@ -125,7 +126,11 @@ Each run writes to its `--out` directory:
 
 ## Reproduction
 
-### 1. Environment
+### 1. Check out and environment
+```bash
+git clone https://github.com/2coolcoder/ShadowFRZ.git
+cd ShadowFRZ
+```
 - Tested with Python 3.12.7, PyTorch 2.9.0 + CUDA 12.8, on 2 × NVIDIA RTX 6000 Ada (48 GB each).
 - Setup:
 
@@ -207,7 +212,7 @@ python analysis/final_figs.py                            # figures for the final
 
 ## Results at a glance
 
-Details and all numbers are in `final_slides/slides.pdf` and `code_repo/results/report_all.md`.
+Summary in `report/report.pdf`; details and all numbers in `final_slides/slides.pdf` and `code_repo/results/report_all.md`.
 
 - **DDG vs. a modern baseline:** DDG's own backprop baseline is 1–4 points below today's recipes. Against a modern one, K=2 modules still roughly matches backprop on CIFAR-10, while K=4 loses on every configuration.
 - **The shadow is what makes 2BW stale.** Dropping it (1BW) recovers all of 2BW's accuracy loss on ResNet-50 and 50–78% of it in BERT pre-training, and all of it with 4 microbatches per pipeline stage. The early phase of training decides the gap.
