@@ -1,5 +1,5 @@
 \documentclass[10pt,twocolumn]{article}
-\usepackage[letterpaper,margin=0.7in,columnsep=0.25in]{geometry}
+\usepackage[letterpaper,hmargin=0.7in,vmargin=0.6in,columnsep=0.25in]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{microtype}
@@ -66,8 +66,7 @@ training. Its paper also describes \textbf{PipeDream-Flush}, which keeps one wei
 flushes the pipeline every batch; this is the same semantics as GPipe~\cite{gpipe}.
 \textbf{FreezeOut}~\cite{freezeout} freezes layers on a fixed schedule.
 \textbf{PolicyFRZ}~\cite{policyfrz} freezes a layer when its gradient variation (GV) and
-relative magnitude (AM) both fall below thresholds. It reports $\sim$28\% compute savings on
-ResNet-50 against a 92.0\% CIFAR-10 baseline.
+relative magnitude (AM) both fall below thresholds.
 Related systems drop weight stashing with learning-rate corrections (PipeMare~\cite{pipemare})
 or remove frozen layers from a GPipe pipeline (PipeTransformer~\cite{pipetransformer}). Neither
 studies how freezing interacts with 2BW's two weight versions.
@@ -101,14 +100,12 @@ $(d, m, \text{schedule})$, not on the number of devices. Our \texttt{pipeemu} li
 version table $(s,k)\mapsto(v_F,v_B)$ from a 1F1B simulator. It then runs the whole
 $d$-stage pipeline on one GPU, copying version $v_F$ into the weights in place before each
 forward pass and $v_B$ before each backward pass. This requires fp32/TF32, since mixed
-precision would hide the mismatch. Three checks validate the emulator:
-\begin{itemize}
-  \item vanilla equals gradient accumulation exactly;
-  \item 2BW matches its closed-form update to within $6\times10^{-17}$;
-  \item a real 2-GPU pipeline (\texttt{torchrun}) matches the emulator bit for bit for Flush, 2BW
-    and 1BW, and its measured per-stage memory matches our memory model.
-\end{itemize}
-Memory for $d{>}2$ is modelled from per-layer profiles. Each stage stores
+precision would hide the mismatch. Three checks validate the emulator. Vanilla equals
+gradient accumulation exactly. 2BW matches its closed-form update to within
+$6\times10^{-17}$. A real 2-GPU pipeline (\texttt{torchrun}) matches the emulator bit for bit
+for Flush, 2BW and 1BW, and its measured cost of the extra weight copy (2BW $-$ vanilla,
+36.3\,MB on stage 1) matches our memory model.
+All other memory figures are modelled from per-layer profiles. Each stage stores
 $\text{versions}\cdot W + \text{grads} + \text{optimizer state} + (d{-}s{+}1)\cdot\text{activations}$.
 Time per batch comes from the 1F1B simulator, with fixed partitions for each model.
 
@@ -129,10 +126,11 @@ of backprop on CIFAR-10 but loses 0.57 on ResNet-56/CIFAR-100. $K{=}4$ is below 
 every configuration, by 0.13 to 1.62 points.
 
 \paragraph{The shadow is what makes 2BW stale (Q2).} On ResNet-50 (Table~\ref{tab:b}), 2BW
-loses 16 points of accuracy at epoch 4 and still trails vanilla by 0.23 at the end. 1BW tracks
-vanilla from the first epoch and ends at 95.84\%. In BERT pre-training (Table~\ref{tab:c},
+is 14 points behind vanilla at epoch 4 (two-seed means: 56.1\% vs.\ 69.8\%; 1BW 69.5\%) and
+still trails by 0.23 at the end. 1BW ends at 95.84\%. In BERT pre-training (Table~\ref{tab:c},
 Fig.~\ref{fig:mm}), 1BW closes 78\%, 64\% and 50\% of 2BW's loss gap for Mini, Small and
-Medium. On Medium at fixed global batch, the gap tracks the predicted mismatch fraction. At
+Medium. Each size uses the largest swept rate at which 2BW still trains; for Mini (1e-3) 2BW's
+own optimum is 5e-4, so the Mini figure may overstate the gain. On Medium at fixed global batch, the gap tracks the predicted mismatch fraction. At
 $m/d{=}4$ only 11\% of microbatches are mismatched and 1BW is within 0.01 of vanilla. Dropping
 the shadow also saves 5--8\% of stage-1 memory on BERT. Running 2BW for only the first 10\% of
 training keeps most of the gap: the early phase decides the outcome.
@@ -157,9 +155,9 @@ The delay also narrows the usable learning rate. At learning rates where vanilla
     Full, aggressive thr. & 94.68 & $-0.94$ & -- & 8.4\% \\
     \bottomrule
   \end{tabular}
-  \caption{Track B. \textsuperscript{a}Average stage-1 memory vs.\ 2BW (model).
-    \textsuperscript{b}Backward compute saved by freezing. PolicyFRZ reports 92.0\% and
-    $\sim$28\% savings.}
+  \caption{Track B, ResNet-50 on CIFAR-10. \textsuperscript{a}Average stage-1 memory vs.\
+    2BW, from the memory model. \textsuperscript{b}Training compute (forward + backward) saved
+    by freezing.}
   \label{tab:b}
 \end{table}
 
@@ -183,42 +181,57 @@ The delay also narrows the usable learning rate. At learning rates where vanilla
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.86\linewidth]{mismatch_vs_gap.png}
+  \includegraphics[width=0.74\linewidth]{mismatch_vs_gap.png}
   \caption{BERT-Medium, global batch 128. 1BW's loss gap to vanilla shrinks with the fraction
     of mismatched microbatches. 2BW's gap does not depend on $d$.}
   \label{fig:mm}
 \end{figure}
 
 \paragraph{The merge vs.\ 2BW and PolicyFRZ (Q3, Q4).} In pre-training, Full is within noise of
-2BW: $+0.13$ points on ResNet-50 and $+0.028$ loss on BERT-Medium. The ablations explain why:
-\begin{itemize}
-  \item Removing \emph{all} shadows (1BW) gives the accuracy gain.
-  \item Removing them \emph{selectively} keeps the shadows early in training, which is exactly
-    when they hurt.
-  \item Freezing gives the memory gain ($-8.6\%$ stage-1 memory, $-4\%$ time per batch on
-    ResNet-50).
-\end{itemize}
+2BW: $+0.13$ points on ResNet-50 and $+0.028$ loss on BERT-Medium. The ablations explain why.
+Removing \emph{all} shadows (1BW) gives the accuracy gain. Removing them \emph{selectively} keeps
+the shadows early in training, exactly when they hurt. Freezing gives the memory gain
+($-8.6\%$ stage-1 memory, $-4\%$ time per batch on ResNet-50).
 On ResNet-50 the GV/AM signal does no better than freezing random layers on the same budget.
-On PolicyFRZ's own model, our baseline is 3.6 points stronger, and the rule saves $\sim$4\% of
-compute rather than 28\%. Forcing earlier freezing costs 0.94 points. During pre-training GV
-stays near the noise level for every layer, so ``GV low and AM low'' only holds in the
-low-learning-rate tail. Fine-tuning is different, because gradients shrink as the task is
-learned. On SST-2 from the public checkpoints the rule freezes 24--26\% of layer-windows. Full
-reaches 94.38\% on BERT-Large (2BW 93.81, vanilla 93.35) with 15.6\% less stage-1 memory than
-2BW (12.9\% on Base, at 91.51 vs.\ 92.55).
+PolicyFRZ reports $\sim$28\% compute savings against a 92.0\% baseline. On the same model, our
+baseline is 3.6 points stronger (95.62\%), and the PolicyFRZ rule saves only $\sim$4\%; forcing
+earlier freezing costs 0.94 points. During pre-training GV stays near the noise
+level for every layer, so ``GV low and AM low'' only holds in the low-learning-rate tail.
+
+\paragraph{Fine-tuning (Q3).} Fine-tuning is the setting PolicyFRZ targets: gradients shrink
+as the task is learned, so the rule fires often. Starting from the public checkpoints on SST-2,
+Full freezes 24--26\% of layer-windows (Table~\ref{tab:ft}). It uses 15.6\% less stage-1 memory
+than 2BW on BERT-Large and is the most accurate variant there. On BERT-Base it saves 12.9\% but
+is about 1 point below 2BW. Each entry is one run on the 872-example dev set, where one standard
+error is about 0.9 points.
+
+\begin{table}[h]
+  \centering\footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \begin{tabular}{lccccc}
+    \toprule
+    SST-2 acc.\ (\%) & Vanilla & 2BW & Full & Mem.\ vs.\ 2BW & Frozen \\
+    \midrule
+    BERT-Base & 92.32 & 92.55 & 91.51 & $-12.9\%$ & 26\% \\
+    BERT-Large & 93.35 & 93.81 & 94.38 & $-15.6\%$ & 24\% \\
+    \bottomrule
+  \end{tabular}
+  \caption{SST-2 fine-tuning, public checkpoints, 1 epoch. Memory: average stage 1, modelled.}
+  \label{tab:ft}
+\end{table}
 
 \paragraph{Scaling (Q5).} At a fixed learning rate, 2BW's gap grows with depth: $+0.15$ on
 Small, $+0.23$ on Medium. 1BW's advantage shrinks with more stages at fixed $m/d$ and comes back
 with larger $m/d$.
 
-\paragraph{Limitations.} Memory and time for $d{>}2$ are modelled; the per-stage deltas are
-validated on the real 2-GPU pipeline. Most rows have one seed (two for key rows), so we
-do not interpret differences below seed noise. Pre-training covers only the first 20k steps.
+\paragraph{Limitations.} Memory and time for $d{>}2$ are modelled. Only the weight-copy memory
+was measured on real hardware, so activation memory and the freezing savings are modelled only.
+Most rows have one seed (two for key rows). Pre-training covers only the first 20k steps.
 
-\paragraph{Conclusion.} 2BW's shadow is the source of its staleness. Removing it uses less
-memory and trains better, and with $m/d\ge4$ it is close to exact. PolicyFRZ's statistics did
-not identify converged layers in pre-training against strong baselines, but they do when
-fine-tuning, where the merge saves 13--16\% of memory at equal accuracy.
+\paragraph{Conclusion.} 2BW's shadow causes its staleness: removing it uses less memory, trains
+better, and is close to exact at $m/d\ge4$. PolicyFRZ's statistics did not find converged layers
+in pre-training. In fine-tuning the merge saves 13--16\% of stage-1
+memory, with the best accuracy on BERT-Large and about 1 point less on BERT-Base.
 
 \label{lastbodypage}
 
